@@ -5,7 +5,7 @@ metadata:
 spec:
   # service:
   #   type: LoadBalancer
-  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres-ha:centos8-13.3-1
+  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:centos8-13.4-1
   postgresVersion: 13
   shutdown: false
   instances:
@@ -22,9 +22,21 @@ spec:
       databases:
         - zoo-dev
         - zoo-uat
+  patroni:
+    dynamicConfiguration:
+      postgresql:
+        pg_hba:
+          - "hostssl all bpace all cert"
+          - "host all all all md5" 
+        parameters:
+          max_parallel_workers: 2
+          max_worker_processes: 2
+          shared_buffers: 256MB
+          work_mem: 5MB
+          archive_timeout: 300
   backups:
     pgbackrest:
-      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:centos8-2.33-0
+      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:centos8-2.35-0
       repos:
       - name: repo1
         volume:
